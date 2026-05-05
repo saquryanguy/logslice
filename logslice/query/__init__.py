@@ -1,5 +1,4 @@
 """logslice.query public API."""
-
 from logslice.query.parser import QueryFilter, ParsedQuery, parse_query
 from logslice.query.evaluator import matches
 from logslice.query.builder import QueryBuilder
@@ -7,7 +6,8 @@ from logslice.query.composer import merge_queries, negate_query
 from logslice.query.validator import ValidationError, validate_query
 from logslice.query.highlighter import highlight_record
 from logslice.query.sorter import SortError, sort_records
-from logslice.query.paginator import PaginationError, PaginatorConfig, PageResult, paginate
+from logslice.query.paginator import PaginationError, PageResult, PaginatorConfig, paginate
+from logslice.query.summarizer import SummaryResult, summarize
 
 __all__ = [
     "QueryFilter",
@@ -23,7 +23,9 @@ __all__ = [
     "SortError",
     "sort_records",
     "PaginationError",
-    "PaginatorConfig",
     "PageResult",
+    "PaginatorConfig",
     "paginate",
+    "SummaryResult",
+    "summarize",
 ]
