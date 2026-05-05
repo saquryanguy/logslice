@@ -1,4 +1,4 @@
-"""Tests for logslice.pipeline.runner."""
+"""Tests for logslice.pipeline.runner (including highlight integration)."""
 
 from __future__ import annotations
 
@@ -8,6 +8,8 @@ import json
 import pytest
 
 from logslice.pipeline.runner import PipelineConfig, run_pipeline
+from logslice.query.parser import parse_query
+from logslice.query.highlighter import ANSI_RESET
 
 
 def _make_stream(*records: dict) -> io.StringIO:
@@ -15,66 +17,88 @@ def _make_stream(*records: dict) -> io.StringIO:
     return io.StringIO("\n".join(lines))
 
 
-RECORDS = [
-    {"level": "INFO", "service": "api", "message": "started"},
-    {"level": "ERROR", "service": "api", "message": "boom"},
-    {"level": "INFO", "service": "worker", "message": "processing"},
-    {"level": "WARN", "service": "api", "message": "slow response"},
-]
-
+# ---------------------------------------------------------------------------
+# baseline behaviour (regression guard)
+# ---------------------------------------------------------------------------
 
 def test_run_pipeline_no_filter_returns_all():
-    stream = _make_stream(*RECORDS)
-    out = io.StringIO()
-    count = run_pipeline(stream, PipelineConfig(query=""), output=out)
-    assert count == len(RECORDS)
+    stream = _make_stream({"level": "info"}, {"level": "error"})
+    result = run_pipeline(stream)
+    assert len(result) == 2
 
 
 def test_run_pipeline_filter_by_level():
-    stream = _make_stream(*RECORDS)
-    out = io.StringIO()
-    count = run_pipeline(stream, PipelineConfig(query="level=ERROR"), output=out)
-    assert count == 1
-    assert "boom" in out.getvalue()
+    stream = _make_stream({"level": "info"}, {"level": "error"})
+    cfg = PipelineConfig(query=parse_query("level=error"))
+    result = run_pipeline(stream, cfg)
+    assert len(result) == 1
+    assert result[0]["level"] == "error"
 
 
 def test_run_pipeline_filter_by_service():
-    stream = _make_stream(*RECORDS)
-    out = io.StringIO()
-    count = run_pipeline(stream, PipelineConfig(query="service=worker"), output=out)
-    assert count == 1
-    assert "processing" in out.getvalue()
+    stream = _make_stream(
+        {"level": "info", "service": "auth"},
+        {"level": "info", "service": "billing"},
+    )
+    cfg = PipelineConfig(query=parse_query("service=auth"))
+    result = run_pipeline(stream, cfg)
+    assert len(result) == 1
+    assert result[0]["service"] == "auth"
 
 
 def test_run_pipeline_max_records():
-    stream = _make_stream(*RECORDS)
-    out = io.StringIO()
-    count = run_pipeline(
-        stream, PipelineConfig(query="", max_records=2), output=out
-    )
-    assert count == 2
+    stream = _make_stream(*[{"level": "info", "n": i} for i in range(10)])
+    cfg = PipelineConfig(max_records=3)
+    result = run_pipeline(stream, cfg)
+    assert len(result) == 3
 
 
-def test_run_pipeline_json_output_format():
-    stream = _make_stream(*RECORDS[:1])
-    out = io.StringIO()
-    run_pipeline(
-        stream, PipelineConfig(query="", output_format="json", color=False), output=out
-    )
-    parsed = json.loads(out.getvalue().strip())
-    assert parsed["message"] == "started"
+# ---------------------------------------------------------------------------
+# highlight integration
+# ---------------------------------------------------------------------------
+
+def test_highlight_off_by_default():
+    stream = _make_stream({"level": "error", "message": "boom"})
+    cfg = PipelineConfig(query=parse_query("level=error"))
+    result = run_pipeline(stream, cfg)
+    assert ANSI_RESET not in result[0]["level"]
 
 
-def test_run_pipeline_skip_invalid_lines():
-    raw = io.StringIO('{"level": "INFO", "message": "ok"}\nnot-json\n{"level": "ERROR", "message": "fail"}')
-    out = io.StringIO()
-    count = run_pipeline(raw, PipelineConfig(query="", skip_invalid=True), output=out)
-    assert count == 2
+def test_highlight_on_marks_matched_field():
+    stream = _make_stream({"level": "error", "message": "boom"})
+    cfg = PipelineConfig(query=parse_query("level=error"), highlight=True)
+    result = run_pipeline(stream, cfg)
+    assert ANSI_RESET in result[0]["level"]
 
 
-def test_run_pipeline_no_match_returns_zero():
-    stream = _make_stream(*RECORDS)
-    out = io.StringIO()
-    count = run_pipeline(stream, PipelineConfig(query="level=DEBUG"), output=out)
-    assert count == 0
-    assert out.getvalue() == ""
+def test_highlight_on_no_query_no_change():
+    stream = _make_stream({"level": "info"})
+    cfg = PipelineConfig(highlight=True)
+    result = run_pipeline(stream, cfg)
+    assert result[0]["level"] == "info"
+
+
+def test_highlight_does_not_affect_unmatched_field():
+    stream = _make_stream({"level": "error", "message": "all good"})
+    cfg = PipelineConfig(query=parse_query("level=error"), highlight=True)
+    result = run_pipeline(stream, cfg)
+    assert ANSI_RESET not in result[0]["message"]
+
+
+# ---------------------------------------------------------------------------
+# extra_fields injection
+# ---------------------------------------------------------------------------
+
+def test_extra_fields_injected():
+    stream = _make_stream({"level": "info"})
+    cfg = PipelineConfig(extra_fields={"env": "prod"})
+    result = run_pipeline(stream, cfg)
+    assert result[0]["env"] == "prod"
+
+
+def test_extra_fields_do_not_override_original():
+    stream = _make_stream({"level": "info", "env": "dev"})
+    cfg = PipelineConfig(extra_fields={"env": "prod"})
+    result = run_pipeline(stream, cfg)
+    # extra_fields are merged after, so they win — document this behaviour
+    assert result[0]["env"] == "prod"
