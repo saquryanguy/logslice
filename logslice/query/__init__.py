@@ -1,15 +1,17 @@
-"""Query sub-package: parsing, evaluation, building, composition, validation, highlighting."""
+"""logslice.query public API."""
 
-from logslice.query.parser import ParsedQuery, QueryFilter, parse_query
+from logslice.query.parser import QueryFilter, ParsedQuery, parse_query
 from logslice.query.evaluator import matches
 from logslice.query.builder import QueryBuilder
 from logslice.query.composer import merge_queries, negate_query
 from logslice.query.validator import ValidationError, validate_query
 from logslice.query.highlighter import highlight_record
+from logslice.query.sorter import SortError, sort_records
+from logslice.query.paginator import PaginationError, PaginatorConfig, PageResult, paginate
 
 __all__ = [
-    "ParsedQuery",
     "QueryFilter",
+    "ParsedQuery",
     "parse_query",
     "matches",
     "QueryBuilder",
@@ -18,4 +20,10 @@ __all__ = [
     "ValidationError",
     "validate_query",
     "highlight_record",
+    "SortError",
+    "sort_records",
+    "PaginationError",
+    "PaginatorConfig",
+    "PageResult",
+    "paginate",
 ]
