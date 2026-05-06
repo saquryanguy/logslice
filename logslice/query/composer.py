@@ -16,7 +16,13 @@ def merge_queries(
     The optional *limit* overrides any limits set on individual queries.
     If *limit* is None and exactly one query carries a limit, that value
     is preserved; when multiple queries have limits the smallest wins.
+
+    Raises:
+        ValueError: If no queries are provided.
     """
+    if not queries:
+        raise ValueError("merge_queries requires at least one query")
+
     merged_filters: list[QueryFilter] = []
     limits: list[int] = []
 
