@@ -1,4 +1,5 @@
-"""logslice.query public API."""
+"""logslice.query — query parsing, evaluation, and utilities."""
+
 from logslice.query.parser import QueryFilter, ParsedQuery, parse_query
 from logslice.query.evaluator import matches
 from logslice.query.builder import QueryBuilder
@@ -8,6 +9,7 @@ from logslice.query.highlighter import highlight_record
 from logslice.query.sorter import SortError, sort_records
 from logslice.query.paginator import PaginationError, PageResult, PaginatorConfig, paginate
 from logslice.query.summarizer import SummaryResult, summarize
+from logslice.query.sampler import SamplerConfig, SamplerError, SampleResult, sample
 
 __all__ = [
     "QueryFilter",
@@ -28,4 +30,8 @@ __all__ = [
     "paginate",
     "SummaryResult",
     "summarize",
+    "SamplerConfig",
+    "SamplerError",
+    "SampleResult",
+    "sample",
 ]
