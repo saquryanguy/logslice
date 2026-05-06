@@ -1,27 +1,21 @@
-"""logslice.query — query parsing, evaluation, and record processing utilities."""
-
-from logslice.query.parser import ParsedQuery, QueryFilter, parse_query
+"""logslice.query public API."""
+from logslice.query.parser import QueryFilter, ParsedQuery, parse_query
 from logslice.query.evaluator import matches
 from logslice.query.builder import QueryBuilder
 from logslice.query.composer import merge_queries, negate_query
 from logslice.query.validator import ValidationError, validate_query
 from logslice.query.highlighter import highlight_record
 from logslice.query.sorter import SortError, sort_records
-from logslice.query.paginator import PageResult, PaginatorConfig, PaginationError, paginate
+from logslice.query.paginator import PaginationError, PageResult, PaginatorConfig, paginate
 from logslice.query.summarizer import SummaryResult, summarize
-from logslice.query.sampler import SamplerConfig, SamplerError, SampleResult, sample
-from logslice.query.deduplicator import DeduplicatorConfig, DeduplicatorError, DeduplicationResult, deduplicate
-from logslice.query.transformer import (
-    TransformConfig,
-    TransformError,
-    TransformRule,
-    transform_record,
-    transform_records,
-)
+from logslice.query.sampler import SamplerError, SamplerConfig, SampleResult, sample
+from logslice.query.deduplicator import DeduplicatorError, DeduplicatorConfig, DeduplicationResult, deduplicate
+from logslice.query.transformer import TransformError, TransformRule, TransformConfig, transform_records
+from logslice.query.enricher import EnrichError, EnrichRule, EnrichConfig, enrich_records
 
 __all__ = [
-    "ParsedQuery",
     "QueryFilter",
+    "ParsedQuery",
     "parse_query",
     "matches",
     "QueryBuilder",
@@ -32,23 +26,26 @@ __all__ = [
     "highlight_record",
     "SortError",
     "sort_records",
+    "PaginationError",
     "PageResult",
     "PaginatorConfig",
-    "PaginationError",
     "paginate",
     "SummaryResult",
     "summarize",
-    "SamplerConfig",
     "SamplerError",
+    "SamplerConfig",
     "SampleResult",
     "sample",
-    "DeduplicatorConfig",
     "DeduplicatorError",
+    "DeduplicatorConfig",
     "DeduplicationResult",
     "deduplicate",
-    "TransformConfig",
     "TransformError",
     "TransformRule",
-    "transform_record",
+    "TransformConfig",
     "transform_records",
+    "EnrichError",
+    "EnrichRule",
+    "EnrichConfig",
+    "enrich_records",
 ]
