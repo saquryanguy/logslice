@@ -55,3 +55,15 @@ def test_parse_nested_field():
     q = parse_query('http.status == 200')
     assert q.filters[0].field == "http.status"
     assert q.filters[0].value == 200
+
+
+def test_parse_invalid_query_raises():
+    """Ensure that a malformed query raises a ValueError."""
+    with pytest.raises(ValueError):
+        parse_query('level ==')
+
+
+def test_parse_invalid_limit_raises():
+    """Ensure that a non-integer limit value raises a ValueError."""
+    with pytest.raises(ValueError):
+        parse_query('level == ERROR limit abc')
