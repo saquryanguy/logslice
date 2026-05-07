@@ -1,5 +1,6 @@
-"""logslice.query public API."""
-from logslice.query.parser import QueryFilter, ParsedQuery, parse_query
+"""logslice.query — query parsing, evaluation, and record processing utilities."""
+
+from logslice.query.parser import ParsedQuery, QueryFilter, parse_query
 from logslice.query.evaluator import matches
 from logslice.query.builder import QueryBuilder
 from logslice.query.composer import merge_queries, negate_query
@@ -10,12 +11,13 @@ from logslice.query.paginator import PaginationError, PageResult, PaginatorConfi
 from logslice.query.summarizer import SummaryResult, summarize
 from logslice.query.sampler import SamplerError, SamplerConfig, SampleResult, sample
 from logslice.query.deduplicator import DeduplicatorError, DeduplicatorConfig, DeduplicationResult, deduplicate
-from logslice.query.transformer import TransformError, TransformRule, TransformConfig, transform_records
+from logslice.query.transformer import TransformError, TransformRule, TransformConfig, apply_transforms
 from logslice.query.enricher import EnrichError, EnrichRule, EnrichConfig, enrich_records
+from logslice.query.router import RouterError, Route, RouterConfig, RoutingResult, route_records
 
 __all__ = [
-    "QueryFilter",
     "ParsedQuery",
+    "QueryFilter",
     "parse_query",
     "matches",
     "QueryBuilder",
@@ -43,9 +45,14 @@ __all__ = [
     "TransformError",
     "TransformRule",
     "TransformConfig",
-    "transform_records",
+    "apply_transforms",
     "EnrichError",
     "EnrichRule",
     "EnrichConfig",
     "enrich_records",
+    "RouterError",
+    "Route",
+    "RouterConfig",
+    "RoutingResult",
+    "route_records",
 ]
