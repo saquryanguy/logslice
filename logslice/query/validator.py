@@ -12,6 +12,8 @@ MAX_FILTERS = 20
 MAX_FIELD_LENGTH = 128
 MAX_VALUE_LENGTH = 1024
 
+NUMERIC_OPERATORS = {"gt", "gte", "lt", "lte"}
+
 
 class ValidationError(Exception):
     """Raised when a query fails validation."""
@@ -44,6 +46,14 @@ def _validate_filter(f: QueryFilter) -> List[str]:
             re.compile(str(f.value))
         except re.error as exc:
             errors.append(f"Invalid regex pattern for field '{f.field}': {exc}.")
+
+    if f.operator in NUMERIC_OPERATORS and f.value is not None:
+        try:
+            float(f.value)
+        except (TypeError, ValueError):
+            errors.append(
+                f"Operator '{f.operator}' on field '{f.field}' requires a numeric value."
+            )
 
     return errors
 
