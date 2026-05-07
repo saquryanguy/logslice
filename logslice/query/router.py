@@ -38,6 +38,19 @@ class RoutingResult:
         return {"record": self.record, "matched_routes": self.matched_routes}
 
 
+def _validate_config(config: RouterConfig) -> None:
+    """Raise RouterError if the config references duplicate route names."""
+    seen: set[str] = set()
+    for route in config.routes:
+        if route.name in seen:
+            raise RouterError(f"Duplicate route name: {route.name!r}")
+        seen.add(route.name)
+    if config.default_route and config.default_route in seen:
+        raise RouterError(
+            f"default_route {config.default_route!r} conflicts with an explicit route name."
+        )
+
+
 def _route_record(
     record: Dict[str, Any], config: RouterConfig
 ) -> RoutingResult:
@@ -61,4 +74,5 @@ def route_records(
     """Route each record and return a list of RoutingResult objects."""
     if not config.routes and not config.default_route:
         raise RouterError("RouterConfig must define at least one route or a default_route.")
+    _validate_config(config)
     return [_route_record(r, config) for r in records]
