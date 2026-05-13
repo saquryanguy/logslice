@@ -55,6 +55,13 @@ def test_missing_level_falls_back_to_unknown():
     assert result.by_level.get("unknown") == 1
 
 
+def test_missing_service_not_counted():
+    """Records without a service field should not appear in by_service."""
+    records = [{"level": "info"}, {"level": "error"}]
+    result = aggregate(_records(records))
+    assert result.by_service == {}
+
+
 def test_timestamp_tracking():
     records = [
         {"timestamp": "2024-01-01T00:00:00Z", "level": "info"},
