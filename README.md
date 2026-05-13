@@ -54,6 +54,19 @@ logslice --sources nginx postgres --query 'level="error"' --tail
 
 ---
 
+## Query Syntax
+
+Queries use a simple key-value expression language with optional boolean operators:
+
+| Example | Description |
+|---|---|
+| `level="error"` | Match a specific field value |
+| `level="error" AND service="nginx"` | Combine conditions with AND |
+| `level="warn" OR level="error"` | Match either condition with OR |
+| `service="redis" AND NOT level="debug"` | Exclude matches with NOT |
+
+---
+
 ## License
 
 MIT © 2024 Your Name
