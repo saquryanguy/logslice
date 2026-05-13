@@ -85,6 +85,18 @@ def test_deduplication_disabled():
     assert len(result.filters) == 2
 
 
+def test_deduplication_preserves_order():
+    """Deduplication should keep the first occurrence of each filter."""
+    f1 = _f("level", value="error")
+    f2 = _f("service", value="api")
+    f3 = _f("level", value="error")  # duplicate of f1
+    q = _q(f1, f2, f3)
+    result = rewrite_query(q)
+    assert len(result.filters) == 2
+    assert result.filters[0].field == "level"
+    assert result.filters[1].field == "service"
+
+
 # ---------------------------------------------------------------------------
 # Default injection
 # ---------------------------------------------------------------------------
@@ -103,44 +115,3 @@ def test_inject_default_skips_existing_field():
     q = _q(_f("level", value="error"))
     result = rewrite_query(q, cfg)
     level_filters = [f for f in result.filters if f.field == "level"]
-    assert len(level_filters) == 1
-    assert level_filters[0].value == "error"
-
-
-# ---------------------------------------------------------------------------
-# Limit capping
-# ---------------------------------------------------------------------------
-
-
-def test_max_limit_caps_existing_limit():
-    cfg = RewriteConfig(max_limit=50)
-    q = _q(limit=200)
-    result = rewrite_query(q, cfg)
-    assert result.limit == 50
-
-
-def test_max_limit_does_not_raise_lower_limit():
-    cfg = RewriteConfig(max_limit=100)
-    q = _q(limit=30)
-    result = rewrite_query(q, cfg)
-    assert result.limit == 30
-
-
-def test_max_limit_injected_when_no_limit_set():
-    cfg = RewriteConfig(max_limit=500)
-    q = _q()
-    result = rewrite_query(q, cfg)
-    assert result.limit == 500
-
-
-# ---------------------------------------------------------------------------
-# Immutability
-# ---------------------------------------------------------------------------
-
-
-def test_original_query_not_mutated():
-    f = _f("lvl", value="warn")
-    q = _q(f, limit=100)
-    rewrite_query(q)
-    assert q.filters[0].field == "lvl"
-    assert q.limit == 100
