@@ -77,3 +77,21 @@ def read_file(
     """
     with open(path, "r", encoding="utf-8") as fh:
         yield from read_stream(fh, skip_invalid=skip_invalid)
+
+
+def read_stdin(skip_invalid: bool = False) -> Generator[dict, None, None]:
+    """Yield parsed log records from standard input.
+
+    Convenience wrapper around :func:`read_stream` that reads from
+    ``sys.stdin``.  Useful for pipeline usage::
+
+        cat app.log | python -m logslice ...
+
+    Args:
+        skip_invalid: When True, malformed lines are silently skipped.
+                      When False (default), a LogReadError is raised.
+
+    Yields:
+        Parsed log record dicts.
+    """
+    yield from read_stream(sys.stdin, skip_invalid=skip_invalid)
