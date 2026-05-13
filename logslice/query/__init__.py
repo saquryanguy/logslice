@@ -1,58 +1,81 @@
-"""logslice.query — query parsing, evaluation, and record processing utilities."""
+"""logslice.query public API."""
 
-from logslice.query.parser import ParsedQuery, QueryFilter, parse_query
-from logslice.query.evaluator import matches
 from logslice.query.builder import QueryBuilder
 from logslice.query.composer import merge_queries, negate_query
-from logslice.query.validator import ValidationError, validate_query
+from logslice.query.deduplicator import DeduplicatorConfig, DeduplicationResult, deduplicate
+from logslice.query.enricher import EnrichConfig, EnrichRule, enrich
+from logslice.query.evaluator import matches
 from logslice.query.highlighter import highlight_record
+from logslice.query.paginator import PaginationError, PaginatorConfig, PageResult, paginate
+from logslice.query.parser import ParsedQuery, QueryFilter, parse_query
+from logslice.query.rewriter import RewriteConfig, RewriteError, rewrite_query
+from logslice.query.router import RouterConfig, RoutingResult, route
+from logslice.query.sampler import SamplerConfig, SampleResult, sample
 from logslice.query.sorter import SortError, sort_records
-from logslice.query.paginator import PaginationError, PageResult, PaginatorConfig, paginate
+from logslice.query.splitter import SplitterConfig, SplitResult, split
 from logslice.query.summarizer import SummaryResult, summarize
-from logslice.query.sampler import SamplerError, SamplerConfig, SampleResult, sample
-from logslice.query.deduplicator import DeduplicatorError, DeduplicatorConfig, DeduplicationResult, deduplicate
-from logslice.query.transformer import TransformError, TransformRule, TransformConfig, apply_transforms
-from logslice.query.enricher import EnrichError, EnrichRule, EnrichConfig, enrich_records
-from logslice.query.router import RouterError, Route, RouterConfig, RoutingResult, route_records
+from logslice.query.throttler import ThrottlerConfig, ThrottleResult, throttle
+from logslice.query.transformer import TransformConfig, TransformRule, apply_transforms
+from logslice.query.validator import ValidationError, validate_query
 
 __all__ = [
+    # parser
     "ParsedQuery",
     "QueryFilter",
     "parse_query",
-    "matches",
+    # builder
     "QueryBuilder",
+    # evaluator
+    "matches",
+    # composer
     "merge_queries",
     "negate_query",
+    # validator
     "ValidationError",
     "validate_query",
+    # highlighter
     "highlight_record",
+    # sorter
     "SortError",
     "sort_records",
+    # paginator
     "PaginationError",
-    "PageResult",
     "PaginatorConfig",
+    "PageResult",
     "paginate",
+    # summarizer
     "SummaryResult",
     "summarize",
-    "SamplerError",
+    # sampler
     "SamplerConfig",
     "SampleResult",
     "sample",
-    "DeduplicatorError",
+    # deduplicator
     "DeduplicatorConfig",
     "DeduplicationResult",
     "deduplicate",
-    "TransformError",
-    "TransformRule",
+    # transformer
     "TransformConfig",
+    "TransformRule",
     "apply_transforms",
-    "EnrichError",
-    "EnrichRule",
+    # enricher
     "EnrichConfig",
-    "enrich_records",
-    "RouterError",
-    "Route",
+    "EnrichRule",
+    "enrich",
+    # router
     "RouterConfig",
     "RoutingResult",
-    "route_records",
+    "route",
+    # throttler
+    "ThrottlerConfig",
+    "ThrottleResult",
+    "throttle",
+    # splitter
+    "SplitterConfig",
+    "SplitResult",
+    "split",
+    # rewriter
+    "RewriteConfig",
+    "RewriteError",
+    "rewrite_query",
 ]
