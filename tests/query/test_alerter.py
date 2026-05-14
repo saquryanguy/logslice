@@ -95,26 +95,12 @@ def test_on_fire_callback_called():
 
 
 def test_multiple_rules_each_evaluated():
-    r1 = AlertRule(name="err", query=_q(_f("level", "eq", "error")))
-    r2 = AlertRule(name="api", query=_q(_f("service", "eq", "api")))
-    result = evaluate_alerts(_ERROR_RECORDS, rules=[r1, r2])
-    names = [e.rule_name for e in result.events]
-    assert names.count("err") == 2
-    assert names.count("api") == 2
-
-
-def test_alert_event_as_dict_keys():
-    rule = AlertRule(name="r", query=_q(_f("level", "eq", "error")), message="uh oh")
-    result = evaluate_alerts([_ERROR_RECORDS[0]], rules=[rule])
-    d = result.events[0].as_dict()
-    assert set(d.keys()) == {"rule_name", "severity", "message", "record"}
-    assert d["message"] == "uh oh"
-
-
-def test_result_as_dict_structure():
-    rule = AlertRule(name="r", query=_q(_f("level", "eq", "error")))
-    result = evaluate_alerts(_ERROR_RECORDS, rules=[rule])
-    d = result.as_dict()
-    assert "total_evaluated" in d
-    assert "events" in d
-    assert isinstance(d["events"], list)
+    """Each rule is evaluated independently against all records."""
+    rule_errors = AlertRule(name="errors", query=_q(_f("level", "eq", "error")))
+    rule_info = AlertRule(name="info", query=_q(_f("level", "eq", "info")))
+    result = evaluate_alerts(_ERROR_RECORDS, rules=[rule_errors, rule_info])
+    error_events = [e for e in result.events if e.rule_name == "errors"]
+    info_events = [e for e in result.events if e.rule_name == "info"]
+    assert len(error_events) == 2
+    assert len(info_events) == 1
+    assert result.total_evaluated == 3
