@@ -11,88 +11,63 @@ from logslice.query.paginator import PaginationError, PageResult, PaginatorConfi
 from logslice.query.summarizer import SummaryResult, summarize
 from logslice.query.sampler import SamplerError, SamplerConfig, SampleResult, sample
 from logslice.query.deduplicator import DeduplicatorError, DeduplicatorConfig, DeduplicationResult, deduplicate
-from logslice.query.transformer import TransformError, TransformRule, TransformConfig, apply_rules
+from logslice.query.transformer import TransformError, TransformRule, TransformConfig, apply_rule, transform
 from logslice.query.enricher import EnrichError, EnrichRule, EnrichConfig, enrich
 from logslice.query.router import RouterError, Route, RouterConfig, RoutingResult, route
 from logslice.query.throttler import ThrottlerError, ThrottlerConfig, ThrottleResult, throttle
 from logslice.query.splitter import SplitterError, SplitterConfig, SplitResult, split
-from logslice.query.rewriter import RewriteError, RewriteConfig, rewrite_query
+from logslice.query.rewriter import RewriteError, RewriteConfig, rewrite
 from logslice.query.grouper import GrouperError, GrouperConfig, GroupResult, group
 from logslice.query.flattener import FlattenerError, FlattenerConfig, FlattenResult, flatten
 from logslice.query.projector import ProjectionError, ProjectorConfig, ProjectionResult, project
-from logslice.query.redactor import RedactError, RedactConfig, RedactResult, redact
+from logslice.query.redactor import RedactError, RedactRule, RedactConfig, RedactResult, redact
 from logslice.query.merger import MergerError, MergerConfig, MergeResult, merge
-from logslice.query.tagger import TaggerError, TaggerConfig, TagResult, tag
+from logslice.query.tagger import TaggerError, TagRule, TaggerConfig, TagResult, tag
 from logslice.query.windower import WindowError, WindowerConfig, WindowResult, window
 from logslice.query.scorer import ScorerError, ScorerConfig, ScoreResult, score
-from logslice.query.alerter import AlertError, AlertRule, AlertEvent, evaluate_alerts
-from logslice.query.normalizer import NormalizeError, NormalizeConfig, NormalizeResult, normalize
+from logslice.query.alerter import AlertError, AlertRule, AlertEvent, alert
+from logslice.query.normalizer import NormalizeError, NormalizeRule, NormalizeConfig, NormalizeResult, normalize
 from logslice.query.correlator import CorrelatorError, CorrelatorConfig, CorrelationGroup, correlate
 from logslice.query.censor import CensorError, CensorConfig, CensorResult, censor
-from logslice.query.dispatcher import DispatchError, DispatchConfig, dispatch
-from logslice.query.buffer import BufferError, BufferConfig, BufferResult, buffer_records
+from logslice.query.dispatcher import DispatchError, DispatchRule, DispatchConfig, dispatch
+from logslice.query.buffer import BufferError, BufferConfig, BufferResult, buffer
+from logslice.query.archiver import ArchiveError, ArchiveConfig, ArchiveResult, archive
+from logslice.query.limiter import LimiterError, LimiterConfig, LimitResult, limit
+from logslice.query.partitioner import PartitionError, PartitionerConfig, PartitionResult, partition
 
 __all__ = [
-    # parser
     "QueryFilter", "ParsedQuery", "parse_query",
-    # evaluator
     "matches",
-    # builder
     "QueryBuilder",
-    # composer
     "merge_queries", "negate_query",
-    # validator
     "ValidationError", "validate_query",
-    # highlighter
     "highlight_record",
-    # sorter
     "SortError", "sort_records", "sort_records_multi",
-    # paginator
     "PaginationError", "PageResult", "PaginatorConfig", "paginate",
-    # summarizer
     "SummaryResult", "summarize",
-    # sampler
     "SamplerError", "SamplerConfig", "SampleResult", "sample",
-    # deduplicator
     "DeduplicatorError", "DeduplicatorConfig", "DeduplicationResult", "deduplicate",
-    # transformer
-    "TransformError", "TransformRule", "TransformConfig", "apply_rules",
-    # enricher
+    "TransformError", "TransformRule", "TransformConfig", "apply_rule", "transform",
     "EnrichError", "EnrichRule", "EnrichConfig", "enrich",
-    # router
     "RouterError", "Route", "RouterConfig", "RoutingResult", "route",
-    # throttler
     "ThrottlerError", "ThrottlerConfig", "ThrottleResult", "throttle",
-    # splitter
     "SplitterError", "SplitterConfig", "SplitResult", "split",
-    # rewriter
-    "RewriteError", "RewriteConfig", "rewrite_query",
-    # grouper
+    "RewriteError", "RewriteConfig", "rewrite",
     "GrouperError", "GrouperConfig", "GroupResult", "group",
-    # flattener
     "FlattenerError", "FlattenerConfig", "FlattenResult", "flatten",
-    # projector
     "ProjectionError", "ProjectorConfig", "ProjectionResult", "project",
-    # redactor
-    "RedactError", "RedactConfig", "RedactResult", "redact",
-    # merger
+    "RedactError", "RedactRule", "RedactConfig", "RedactResult", "redact",
     "MergerError", "MergerConfig", "MergeResult", "merge",
-    # tagger
-    "TaggerError", "TaggerConfig", "TagResult", "tag",
-    # windower
+    "TaggerError", "TagRule", "TaggerConfig", "TagResult", "tag",
     "WindowError", "WindowerConfig", "WindowResult", "window",
-    # scorer
     "ScorerError", "ScorerConfig", "ScoreResult", "score",
-    # alerter
-    "AlertError", "AlertRule", "AlertEvent", "evaluate_alerts",
-    # normalizer
-    "NormalizeError", "NormalizeConfig", "NormalizeResult", "normalize",
-    # correlator
+    "AlertError", "AlertRule", "AlertEvent", "alert",
+    "NormalizeError", "NormalizeRule", "NormalizeConfig", "NormalizeResult", "normalize",
     "CorrelatorError", "CorrelatorConfig", "CorrelationGroup", "correlate",
-    # censor
     "CensorError", "CensorConfig", "CensorResult", "censor",
-    # dispatcher
-    "DispatchError", "DispatchConfig", "dispatch",
-    # buffer
-    "BufferError", "BufferConfig", "BufferResult", "buffer_records",
+    "DispatchError", "DispatchRule", "DispatchConfig", "dispatch",
+    "BufferError", "BufferConfig", "BufferResult", "buffer",
+    "ArchiveError", "ArchiveConfig", "ArchiveResult", "archive",
+    "LimiterError", "LimiterConfig", "LimitResult", "limit",
+    "PartitionError", "PartitionerConfig", "PartitionResult", "partition",
 ]
