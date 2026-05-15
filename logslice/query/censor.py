@@ -30,9 +30,15 @@ class CensorConfig:
     def __post_init__(self) -> None:
         if not self.keys and not self.patterns:
             raise CensorError("CensorConfig requires at least one key or pattern")
-        self._compiled: List[re.Pattern[str]] = [
-            re.compile(p) for p in self.patterns
-        ]
+        invalid = [p for p in self.patterns if not p]
+        if invalid:
+            raise CensorError("CensorConfig patterns must not be empty strings")
+        try:
+            self._compiled: List[re.Pattern[str]] = [
+                re.compile(p) for p in self.patterns
+            ]
+        except re.error as exc:
+            raise CensorError(f"Invalid regex pattern in CensorConfig: {exc}") from exc
 
     def _should_censor(self, key: str) -> bool:
         if key in self.keys:
